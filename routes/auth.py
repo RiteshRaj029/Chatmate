@@ -16,7 +16,7 @@ def login():
             return redirect(url_for('auth.login'))
         login_user(user, remember=form.remember_me.data)
         return redirect(url_for('chat.index'))
-    return render_template('login.html', form = form)
+    return render_template('login1.html', form = form)
 
 @bp.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -32,7 +32,7 @@ def signup():
         db.session.commit()
         flash('User Signed Up')
         return redirect(url_for('auth.login'))
-    return render_template('signup.html', form = form)
+    return render_template('Register.html', form = form)
 
 @bp.route('/logout')
 @login_required

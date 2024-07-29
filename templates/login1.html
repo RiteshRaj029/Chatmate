@@ -155,9 +155,9 @@
     </style>
 </head>
 <body>
-    <video id="vid" src = "C:\Users\SoumyaSahay\Downloads\TechB.mp4" autoplay muted loop></video>
+    <video id="vid" src = "{{url_for('static',filename='asset/TechB.mp4')}}" autoplay muted loop></video>
     <div class="header-animation">
-        <img src="C:\Users\SoumyaSahay\Downloads\Logo1.png" alt="Logo" class="header-logo">
+        <img src="{{url_for('static',filename='asset/Logo1.png')}}" alt="Logo" class="header-logo">
         <div class="header-text">MNICHAT</div>
     </div>
     
