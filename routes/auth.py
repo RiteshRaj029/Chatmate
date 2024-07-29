@@ -4,9 +4,9 @@ from forms.auth_forms import LoginForm, SignupForm
 from models.user import User
 from models import db, User
 
-auth_bp = Blueprint('auth', __name__)
+bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@bp.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -18,7 +18,7 @@ def login():
         return redirect(url_for('chat.index'))
     return render_template('login.html', form = form)
 
-@auth_bp.route('/signup', methods=['GET', 'POST'])
+@bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
@@ -34,7 +34,7 @@ def signup():
         return redirect(url_for('auth.login'))
     return render_template('signup.html', form = form)
 
-@auth_bp.route('/logout')
+@bp.route('/logout')
 @login_required
 def logout():
     logout_user()
