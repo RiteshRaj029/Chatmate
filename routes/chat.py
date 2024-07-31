@@ -16,7 +16,7 @@ bp = Blueprint('chat', __name__, url_prefix='/chat')
 @bp.route('/', methods=['GET'])
 @login_required
 def chat():
-    return render_template('chat.html')
+    return render_template('index.html')
 
 @bp.route('/api/send_message', methods = ['POST'])
 @login_required
