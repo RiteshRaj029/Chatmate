@@ -1,6 +1,7 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from flask_login import login_required, current_user
-from app import db
+from werkzeug.exceptions import Unauthorized
+from extensions import db
 from models.chat_history import ChatHistory
 from models.openai_client import client_creator
 from io import BytesIO
@@ -10,7 +11,8 @@ import pyttsx3
 import uuid
 import os
 
-bp = Blueprint('chat', __name__, url_prefix='/chat')
+bp = Blueprint('chat', __name__)
+
 
 
 @bp.route('/', methods=['GET'])
@@ -90,4 +92,6 @@ def add_image():
 
     return jsonify({'status': 'Image processing failed'}), 500
 
-
+@bp.errorhandler(Unauthorized)
+def unauthorized_handler(e):
+    return redirect(url_for('auth.login'))
