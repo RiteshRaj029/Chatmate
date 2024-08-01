@@ -131,18 +131,18 @@
     <div class="card">
         <h2 class="mt-5">SIGN UP</h2>
         <div class="card-body mt-2">
-            <form>
+            <form method="POST" action="/signup">
                 <div class="mb-3">
-                    <input type="text" class="form-control" id="exampleInputName" placeholder="Your Name*" required>
+                    <input type="text" class="form-control" id="exampleInputName" name="name" placeholder="Your Name*" required>
                 </div>
                 <div class="mb-3">
-                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your Email*" required>
+                    <input type="email" class="form-control" id="exampleInputEmail1" name="email" placeholder="Your Email*" required>
                 </div>
                 <div class="mb-3">
-                    <input type="tel" class="form-control" id="exampleInputPhone" placeholder="Your Phone*" required>
+                    <input type="tel" class="form-control" id="exampleInputPhone" name="mobile" placeholder="Your Phone*" required>
                 </div>
                 <div class="mb-3">
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Your Password*" required>
+                    <input type="password" class="form-control" id="exampleInputPassword1" name="password" placeholder="Your Password*" required>
                 </div>
                 <button type="submit" id="btn" class="btn btn-success">Register</button>
             </form>
@@ -150,7 +150,7 @@
                 <span class="or-line"></span>
                 <span class="span-or">or</span>
             </div><br>
-            <div class="text-center dont-have">Already have an account? <a href="#"><b>Login</b></a></div>
+            <div class="text-center dont-have">Already have an account? <a href="/login"><b>Login</b></a></div>
         </div>
     </div>
 </body>

@@ -6,7 +6,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(64))
     email = db.Column(db.String(64), index = True, unique = True)
-    phone_number = db.Column(db.String(15))
+    mobile = db.Column(db.String(15))
     password_hash = db.Column(db.String(64))
 
     def set_password(self, password):
