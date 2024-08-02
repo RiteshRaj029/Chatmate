@@ -164,12 +164,12 @@
     <div class="card">
         <p class="login-text"><b>Sign In</b></p>
         <div class="card-body">
-            <form>
+            <form method="POST" action="/login">
                 <div class="mb-3">
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Your Email*">
+                    <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" placeholder="Your Email*">
                 </div>
                 <div class="mb-3">
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Your Password*">
+                    <input type="password" class="form-control" id="exampleInputPassword1" name="password" placeholder="Your Password*">
                 </div>
                 <button type="submit" id="btn" class="btn btn-success">Login</button>
             </form>

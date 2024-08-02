@@ -9,15 +9,35 @@ bp = Blueprint('auth', __name__)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email = form.email.data).first()
-        if user is None or not user.check_password(form.password.data):
+    # form = LoginForm()
+    # if form.validate_on_submit():
+    #     user = User.query.filter_by(email = form.email.data).first()
+    #     if user is None or not user.check_password(form.password.data):
+    #         flash('Invalid email or password')
+    #         return redirect(url_for('auth.login'))
+    #     login_user(user, remember=form.remember_me.data)
+    #     return redirect(url_for('chat.index'))
+    # return render_template('login1.html', form = form)
+
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        if not email or not password:
+            flash('Please fill out both fields')
+            return redirect(url_for('auth.login'))
+
+        user = User.query.filter_by(email=email).first()
+
+        if user is None or not user.check_password(password):
             flash('Invalid email or password')
             return redirect(url_for('auth.login'))
-        login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('chat.index'))
-    return render_template('login1.html', form = form)
+
+        login_user(user)
+        flash('Login successful!')
+        return redirect(url_for('chat.chat'))  # Redirect to the chat page after successful login
+
+    return render_template('login1.html')
 
 @bp.route('/signup', methods=['GET', 'POST'])
 def signup():
