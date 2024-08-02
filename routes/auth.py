@@ -59,10 +59,10 @@ def signup():
             flash('Please fill out all fields')
             return redirect(url_for('auth.signup'))
 
-        # existing_user = User.query.filter((User.email == email) | (User.mobile == mobile)).first()
-        # if existing_user:
-        #     flash('User with this email or mobile number already exists')
-        #     return redirect(url_for('auth.signup'))
+        existing_user = User.query.filter((User.email == email) | (User.mobile == mobile)).first()
+        if existing_user:
+            flash('User with this email or mobile number already exists')
+            return redirect(url_for('auth.signup'))
 
         new_user = User(name=name, email=email, mobile=mobile)
         new_user.set_password(password)
