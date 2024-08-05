@@ -6,6 +6,58 @@ document.addEventListener('DOMContentLoaded', function () {
     const chatContainer = document.getElementById('chat-container');
     const uploadBtn = document.getElementById('upload-btn');
     const imageUpload = document.getElementById('image-upload');
+    const audioBtn = document.getElementById('audio-btn');
+
+    let mediaRecorder;
+    let audioChunks = [];
+
+    audioBtn.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            audioBtn.textContent = 'Press to talk 🎙️';
+        } else {
+            startRecording();
+            audioBtn.textContent = 'Stop recording ⏹️';
+        }
+    });
+
+    function startRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            audioChunks = [];
+
+            mediaRecorder.addEventListener('dataavailable', event => {
+                audioChunks.push(event.data);
+            });
+
+            mediaRecorder.addEventListener('stop', async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.mp3');
+
+                try {
+                    const response = await fetch('/api/transcribe_audio', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        displayMessage(data.transcription, 'user');
+                    } else {
+                        alert(data.error || 'An error occurred during transcription');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while transcribing the audio');
+                }
+            });
+        }).catch(error => {
+            console.error('Error accessing media devices.', error);
+            alert('Could not access microphone. Please check your settings.');
+        });
+    }
 
     sendBtn.addEventListener('click', async () => {
         const message = messageInput.value;
@@ -45,6 +97,8 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('An error occurred while sending the message');
         }
     });
+
+
 
     function displayMessage(message, sender) {
         const messageElement = document.createElement('div');

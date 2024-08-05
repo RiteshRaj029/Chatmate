@@ -29,7 +29,7 @@ def send_message():
         data = request.get_json()
         message = data.get('message')
         model_params = data.get('model_params',{})
-        audio_response = data.get('audio_response',False)
+        audio_response = data.get('audio_response')
 
         if not message:
             return jsonify({'error': 'Message is required'}), 400
@@ -101,6 +101,41 @@ def add_image():
         return jsonify({'status': 'Image received'})
 
     return jsonify({'status': 'Image processing failed'}), 500
+
+
+@bp.route('/api/transcribe_audio', methods=['POST'])
+@login_required
+def transcribe_audio():
+    if 'audio' not in request.files:
+        return jsonify({'error': 'No audio file uploaded'}), 400
+
+    audio_file = request.files['audio']
+    if audio_file:
+        file_extension = audio_file.filename.split('.')[-1].lower()
+        supported_formats = ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']
+        
+        if file_extension not in supported_formats:
+            return jsonify({'error': f'Unsupported file format: {file_extension}. Supported formats: {supported_formats}'}), 400
+        
+        audio_bytes = audio_file.read()
+        audio_file_like = BytesIO(audio_bytes)  # Convert bytes to file-like object
+
+        try:
+            client = client_creator()
+            # Use Whisper model to transcribe audio
+            transcription = client.audio.transcriptions.create(
+                model="whisper",
+                file= audio_file_like
+            )
+            return jsonify({'transcription': transcription['text']})
+
+        except Exception as e:
+            print(f"Error in transcribe_audio: {e}")
+            return jsonify({'error': str(e)}), 500
+    
+
+    return jsonify({'error': 'Audio processing failed'}), 500
+
 
 @bp.errorhandler(Unauthorized)
 def unauthorized_handler(e):

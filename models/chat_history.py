@@ -1,5 +1,5 @@
 from datetime import datetime
-from models import db
+from extensions import db
 
 class ChatHistory(db.Model):
     id = db.Column(db.Integer, primary_key = True)
