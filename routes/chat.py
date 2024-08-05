@@ -10,10 +10,12 @@ from PIL import Image
 import pyttsx3
 import uuid
 import os
+import logging
 
 bp = Blueprint('chat', __name__)
 
-
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 @bp.route('/', methods=['GET'])
 @login_required
@@ -23,52 +25,60 @@ def chat():
 @bp.route('/api/send_message', methods = ['POST'])
 @login_required
 def send_message():
-    data = request.get_json()
-    message = request.get('message')
-    model_params = data.get('model_params')
-    audio_response = data.get('audio_response')
+    try:
+        data = request.get_json()
+        message = data.get('message')
+        model_params = data.get('model_params',{})
+        audio_response = data.get('audio_response',False)
 
-    client = client_creator()
-    response_message = ""
-    response = client.chat.completions.create(
-        model= model_params["model"] if "model" in model_params else "gpt-4o",
-        messages = [{"role": "user", "content": message}],
-        temperature=model_params["temperature"] if "temperature" in model_params else 0.3,
-        max_tokens=4096,
-        stream=True,
-    )
+        if not message:
+            return jsonify({'error': 'Message is required'}), 400
+        
+        client = client_creator()
+        response_message = ""
+        response = client.chat.completions.create(
+            model= model_params.get("model","gpt-4o"),
+            messages = [{"role": "user", "content": message}],
+            temperature=model_params.get("temperature",0.3),
+            max_tokens=4096,
+            stream=True,
+        )
 
-    for chunk in response:
-        try:
-            if chunk.choices:
-                content = chunk.choices[0].delta.content
-                if content:
-                    response_message += content
-                yield response_message
-        except IndexError as e:
-            print(f"Debug Exception - {str(e)}")
-            print(f"Debug: Chunk - {chunk}")
+        for chunk in response:
+            try:
+                if chunk.choices:
+                    content = chunk.choices[0].delta.content
+                    if content:
+                        response_message += content
+                    # yield response_message
+            except IndexError as e:
+                print(f"Debug Exception - {str(e)}")
+                print(f"Debug: Chunk - {chunk}")
 
-    chat_history = ChatHistory(user_id = current_user.id, message = message, response = response_message)
-    db.session.add(chat_history)
-    db.session.commit()
+        # chat_history = ChatHistory(user_id = current_user.id, message = message, response = response_message)
+        # db.session.add(chat_history)
+        # db.session.commit()
 
-    response_data = {
-        'response': response_message,
-        'audio': None  # Audio need to be added
-    }
+        response_data = {
+            'response': response_message,
+            'audio': None  # Audio need to be added
+        }
 
-    if audio_response:
-        engine = pyttsx3.init()
-        unique_audio_file = f'response_audio_{uuid.uuid4()}.mp3'
-        engine.save_to_file(response_message, unique_audio_file)
-        engine.runAndWait()
-        with open(unique_audio_file,'rb') as audio_file:
-            audio_bytes = audio_file.read()
-        response_data['audio'] = base64.b64encode(audio_bytes).decode('utf-8')
-        os.remove(unique_audio_file)
+        if audio_response:
+            engine = pyttsx3.init()
+            unique_audio_file = f'response_audio_{uuid.uuid4()}.mp3'
+            engine.save_to_file(response_message, unique_audio_file)
+            engine.runAndWait()
+            with open(unique_audio_file,'rb') as audio_file:
+                audio_bytes = audio_file.read()
+            response_data['audio'] = base64.b64encode(audio_bytes).decode('utf-8')
+            os.remove(unique_audio_file)
 
-    return jsonify(response_data)
+        return jsonify(response_data)
+    
+    except Exception as e:
+        logging.error(f"Error in send_message: {str(e)}")
+        return jsonify({'error': 'Internal Server Error'}), 500
 
 @bp.route('/api/add_image', methods = ['POST'])
 @login_required

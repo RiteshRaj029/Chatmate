@@ -27,24 +27,26 @@
             <nav>
                 <ul>
                     <h2 style="font-family: Kode Mono">Select a model</h2>
-                    <select style="background-color: lightcyan;">
+                    <select id="model-select" style="background-color: lightcyan;">
                         <option value="gpt-4o">gpt-4o</option>
                         <option value="gpt-4">gpt-4</option>
                         <option value="gpt-3">gpt-3</option>
                     </select>
-                    <button class="btn model-parameters" style="background-color: lightcyan;">Model parameters</button>
+                    <button id="model-parameters" class="btn model-parameters" style="background-color: lightcyan;">Model parameters</button>
                     <div class="audio-response"  style="display: flex;justify-content:space-between">
-                        <p style="font-weight: bold;font-size: larger;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Audio response</p><input type="checkbox" style="width: 8%;">
+                        <p style="font-weight: bold;font-size: larger;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Audio response</p>
+                        <input type="checkbox" id="audio-response-checkbox" style="width: 8%;">
                     </div>
-                    <button class="btn reset-conversation" style="font-family: Kode Mono; background-color: lightcyan;">Reset conversation 🔁</button>
+                    <button id="reset-conversation" class="btn reset-conversation" style="font-family: Kode Mono; background-color: lightcyan;">Reset conversation 🔁</button>
                     <div class="add-section" style="font-family: Kode Mono">
                         <h3 style="text-align: left; margin-top: 20px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif">Add an image</h3>
-                        <button class="btn upload-btn" style="background-color:lightcyan">Upload ⬇️</button>
-                        <button class="btn camera-btn" style="background-color:lightcyan">Camera 📸</button>
+                        <input type="file" id="image-upload" style="display: none;" accept="image/*">
+                        <button id="upload-btn" class="btn upload-btn" style="background-color:lightcyan">Upload ⬇️</button>
+                        <button id="camera-btn" class="btn camera-btn" style="background-color:lightcyan">Camera 📸</button>
                     </div>
                     <div class="add-section" style="font-family: Kode Mono">
                         <h3 style="text-align: left; margin-top: 20px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif">Add an audio</h3>
-                        <button class="btn audio-btn" style="background-color:lightcyan">Press to talk 🎙️</button>
+                        <button id="audio-btn" class="btn audio-btn" style="background-color:lightcyan">Press to talk 🎙️</button>
                     </div>
                 </ul>
             </nav>
@@ -67,9 +69,10 @@
                 <h1 style=" font-family:Kode Mono; margin-top: 10px; margin-left: 10px;">OmniChat</h1>
             </div>
             <div class="message-input">
-                <input type="text" placeholder="Enter your message">
-                <button class="send-btn">&gt;</button>
+                <input type="text" id="message-input" placeholder="Enter your message">
+                <button id="send-btn" class="send-btn">&gt;</button>
             </div>
+            <div id="chat-container"></div>
         </div>
     </div>
     <script src="{{url_for('static',filename='js/init.js')}}"></script>
