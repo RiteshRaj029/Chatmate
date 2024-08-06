@@ -11,7 +11,7 @@ import pyttsx3
 import uuid
 import os
 import logging
-import ffmpeg
+
 
 bp = Blueprint('chat', __name__)
 
@@ -111,6 +111,7 @@ def transcribe_audio():
         return jsonify({'error': 'No audio file uploaded'}), 400
 
     audio_file = request.files['audio']
+    print(f"printing the audio file........{audio_file}")
     if audio_file:
         print(audio_file.filename)
         file_extension = audio_file.filename.split('.')[-1].lower()
