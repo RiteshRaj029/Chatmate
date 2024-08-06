@@ -11,6 +11,7 @@ import pyttsx3
 import uuid
 import os
 import logging
+import ffmpeg
 
 bp = Blueprint('chat', __name__)
 
@@ -111,21 +112,25 @@ def transcribe_audio():
 
     audio_file = request.files['audio']
     if audio_file:
+        print(audio_file.filename)
         file_extension = audio_file.filename.split('.')[-1].lower()
+        print(f"this is the extension {file_extension}")
         supported_formats = ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']
         
         if file_extension not in supported_formats:
             return jsonify({'error': f'Unsupported file format: {file_extension}. Supported formats: {supported_formats}'}), 400
         
+        
         audio_bytes = audio_file.read()
-        audio_file_like = BytesIO(audio_bytes)  # Convert bytes to file-like object
+        # audio_file_like = BytesIO(audio_bytes)  # Convert bytes to file-like object
 
         try:
             client = client_creator()
             # Use Whisper model to transcribe audio
             transcription = client.audio.transcriptions.create(
                 model="whisper",
-                file= audio_file_like
+                file= audio_bytes,
+                language='en'
             )
             return jsonify({'transcription': transcription['text']})
 

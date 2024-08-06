@@ -32,9 +32,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             mediaRecorder.addEventListener('stop', async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
                 const formData = new FormData();
-                formData.append('audio', audioBlob, 'recording.mp3');
+                formData.append('audio', audioBlob, 'recording.wav');
+
+                for (const [key, value] of formData.entries()) {
+                    console.log(`${key}:`, value);
+                }
+                
 
                 try {
                     const response = await fetch('/api/transcribe_audio', {
@@ -108,25 +113,25 @@ document.addEventListener('DOMContentLoaded', function () {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    uploadBtn.addEventListener('click', () => {
-        imageUpload.click();
-    });
+    // uploadBtn.addEventListener('click', () => {
+    //     imageUpload.click();
+    // });
 
-    imageUpload.addEventListener('change', async () => {
-        const file = imageUpload.files[0];
-        if (!file) return;
+    // imageUpload.addEventListener('change', async () => {
+    //     const file = imageUpload.files[0];
+    //     if (!file) return;
 
-        const formData = new FormData();
-        formData.append('image', file);
+    //     const formData = new FormData();
+    //     formData.append('image', file);
 
-        const response = await fetch('/api/add_image', {
-            method: 'POST',
-            body: formData
-        });
+    //     const response = await fetch('/api/add_image', {
+    //         method: 'POST',
+    //         body: formData
+    //     });
 
-        const data = await response.json();
-        alert(data.status);
-    });
+    //     const data = await response.json();
+    //     alert(data.status);
+    // });
 });
 
 
