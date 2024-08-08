@@ -34,6 +34,7 @@ def login():
             return redirect(url_for('auth.login'))
 
         login_user(user)
+        
         flash('Login successful!')
         return redirect(url_for('chat.chat'))  # Redirect to the chat page after successful login
 

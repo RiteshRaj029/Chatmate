@@ -11,6 +11,7 @@ import pyttsx3
 import uuid
 import os
 import logging
+import ffmpeg
 
 
 bp = Blueprint('chat', __name__)
@@ -21,7 +22,8 @@ logging.basicConfig(level=logging.DEBUG)
 @bp.route('/', methods=['GET'])
 @login_required
 def chat():
-    return render_template('index.html')
+    user = current_user
+    return render_template('index.html',user=user)
 
 @bp.route('/api/send_message', methods = ['POST'])
 @login_required
@@ -104,7 +106,7 @@ def add_image():
     return jsonify({'status': 'Image processing failed'}), 500
 
 
-@bp.route('/api/transcribe_audio', methods=['POST'])
+@bp.route('/api/transcribe_audio', methods=['GET','POST'])
 @login_required
 def transcribe_audio():
     if 'audio' not in request.files:
@@ -113,6 +115,7 @@ def transcribe_audio():
     audio_file = request.files['audio']
     print(f"printing the audio file........{audio_file}")
     if audio_file:
+        
         print(audio_file.filename)
         file_extension = audio_file.filename.split('.')[-1].lower()
         print(f"this is the extension {file_extension}")
@@ -122,22 +125,37 @@ def transcribe_audio():
             return jsonify({'error': f'Unsupported file format: {file_extension}. Supported formats: {supported_formats}'}), 400
         
         
-        audio_bytes = audio_file.read()
-        # audio_file_like = BytesIO(audio_bytes)  # Convert bytes to file-like object
+        with open('recording.mp3', 'wb') as audio:
+            audio_file.save(audio)
+        print('file uploaded successfully')
+        
+        
+        output_path = "testing.wav"
+        ffmpeg.input("recording.mp3").output(output_path, acodec='pcm_s16le', ar=16000).run(overwrite_output=True)
+        
+        # audiofile_path = audio_file.read()
+        # audio_file_like = BytesIO(r"C:\Hosting Projects\Chatmate\recording.wav")  # Convert bytes to file-like object
+        with open(r"C:\Hosting Projects\Chatmate\testing.wav", "rb") as f:
+            # audio_file_like = BytesIO(f.read())  # Convert bytes to file-like object
+            
+            
+            # audio_file_like = BytesIO(f.read())
 
-        try:
+    
+        # try:
             client = client_creator()
             # Use Whisper model to transcribe audio
+            print("The code was called here!")
             transcription = client.audio.transcriptions.create(
                 model="whisper",
-                file= audio_bytes,
+                file= f,
                 language='en'
             )
-            return jsonify({'transcription': transcription['text']})
+            return jsonify({'transcription': transcription.text})
 
-        except Exception as e:
-            print(f"Error in transcribe_audio: {e}")
-            return jsonify({'error': str(e)}), 500
+        # except Exception as e:
+        #     print(f"Error in transcribe_audio: {e}")
+        #     return jsonify({'error': str(e)}), 500
     
 
     return jsonify({'error': 'Audio processing failed'}), 500

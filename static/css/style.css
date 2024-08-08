@@ -54,7 +54,13 @@
   text-align: center;
   margin-right: -275px;
 } */
-
+.chat{
+  bottom: 0;
+    position: absolute;
+    margin-bottom: 100px;
+    font-size: 35px;
+    right: 5px;
+}
 .sidebar {
   width: 25%;
   /*background-color:;*/
@@ -63,6 +69,9 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+.hidden {
+  display: none;
 }
 
 .sidebar h2 {
@@ -106,6 +115,7 @@ body {
   overflow: hidden;
   font-family: "Open Sans", sans-serif;
   font-size: 14px;
+  background-color: lightcyan;
 }
 
 .container {
@@ -113,7 +123,7 @@ body {
   flex-flow: row wrap;
 }
 .container .sidebar {
-  background-color: rgb(7, 90, 90);
+  background-color: rgb(3, 44, 44);
   color: #62c5c5;
   width: 20%;
   height: 100%;
@@ -242,7 +252,7 @@ body {
 .container .main {
   margin-left: calc(20% + 2rem);
   padding: 1rem;
-  background-color: lightcyan;
+
 }
 .message-input{
   bottom: 0;

@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const imageUpload = document.getElementById('image-upload');
     const audioBtn = document.getElementById('audio-btn');
 
+    document.getElementById('logout-icon').addEventListener('click', function() {
+        window.location.href = '/logout';
+    });
+
     let mediaRecorder;
     let audioChunks = [];
 
@@ -15,7 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (mediaRecorder && mediaRecorder.state === 'recording') {
             mediaRecorder.stop();
             audioBtn.textContent = 'Press to talk 🎙️';
-        } else {
+        }
+         else {
             startRecording();
             audioBtn.textContent = 'Stop recording ⏹️';
         }
@@ -32,9 +37,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             mediaRecorder.addEventListener('stop', async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
                 const formData = new FormData();
-                formData.append('audio', audioBlob, 'recording.wav');
+                formData.append('audio', audioBlob, 'recording.mp3');
 
                 for (const [key, value] of formData.entries()) {
                     console.log(`${key}:`, value);
@@ -42,21 +47,58 @@ document.addEventListener('DOMContentLoaded', function () {
                 
 
                 try {
-                    const response = await fetch('/api/transcribe_audio', {
+                const response = await fetch('/api/transcribe_audio', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    const transcribedText = data.transcription;
+                    displayMessage(transcribedText, 'user');
+
+                    const modelParams = {
+                        model: modelSelect.value,
+                        temperature: 0.3
+                    };
+                    const audioResponse = audioResponseCheckbox.checked;
+
+                    const messageResponse = await fetch('/api/send_message', {
                         method: 'POST',
-                        body: formData
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ message: transcribedText, model_params: modelParams, audio_response: audioResponse })
                     });
 
-                    const data = await response.json();
-                    if (response.ok) {
-                        displayMessage(data.transcription, 'user');
+                
+
+                    const messageData = await messageResponse.json();
+                    if (messageResponse.ok) {
+                        
+                        displayMessage(messageData.response, 'bot');
+                        console.log(messageData)
+                        console.log(messageData.response)
+
+                        // if (messageData.audio) {
+                        //     const audio = new Audio(`data:audio/mp3;base64,${messageData.audio}`);
+                        //     audio.play();
+                        // }
+
+                        messageInput.value = '';
                     } else {
-                        alert(data.error || 'An error occurred during transcription');
+                        alert(messageData.error || 'An error occurred');
                     }
-                } catch (error) {
+                } 
+                else {
+                    alert(data.error || 'An error occurred during transcription');
+                }
+                } 
+                catch (error) {
                     console.error('Error:', error);
                     alert('An error occurred while transcribing the audio');
                 }
+                
             });
         }).catch(error => {
             console.error('Error accessing media devices.', error);
@@ -170,3 +212,9 @@ function showHover() {
 		});
 	}
 }
+const chatmenu = document.getElementById('chat');
+const chatarea = document.getElementById('chatarea');
+
+chatmenu.addEventListener('click', () => {
+    chatarea.classList.toggle('hidden');
+});

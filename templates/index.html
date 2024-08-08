@@ -21,7 +21,7 @@
                     <img src="{{url_for('static',filename='asset/cralogo.png')}}" alt="none2">
                 </div>
                 <div class="menu">
-                    <i class="bi bi-list" style="color: black;"></i>
+                    <i class="bi bi-list" style="color: cyan;"></i>
                 </div>
             </div>
             <nav>
@@ -55,8 +55,9 @@
                     <img src="{{url_for('static',filename='asset/logo.png')}}" alt="">
                 </div>
                 <div class="name">
-                    <h4>Test User</h4>
-                    Admin
+                    <h4>{{user.name|capitalize}}</h4>
+                    {{user.email}}
+                    <i class="bi bi-box-arrow-left" id="logout-icon" style="margin-left: 80px;cursor: pointer;"></i>
                 </div>
                 
             </div>
@@ -64,9 +65,15 @@
         <div class="main">
             <div class="row" style="display: flex;">
                 <div class="image-logo">
-                    <img src="Logo1.png" alt="" style="width: 50x; height:50px">
+                    <img src="{{url_for('static',filename='asset/Logo1.png')}}" alt="" style="width: 50x; height:50px">
                 </div>
                 <h1 style=" font-family:Kode Mono; margin-top: 10px; margin-left: 10px;">OmniChat</h1>
+            </div>
+            <div class="chat">
+                <div class="chat-area" style="background-color: lightgreen;width:300px;height:300px" id="chatarea">
+
+                </div>
+                <i class="bi bi-chat-dots-fill" style="right: 10px;position: absolute;bottom:-42px" id="chat"></i>
             </div>
             <div class="message-input">
                 <input type="text" id="message-input" placeholder="Enter your message">
