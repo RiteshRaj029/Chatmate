@@ -125,7 +125,7 @@ def add_image():
     return jsonify({'status': 'Image processing failed'}), 500
 
 
-@bp.route('/api/transcribe_audio', methods=['GET','POST'])
+@bp.route('/api/transcribe_audio', methods=['POST'])
 @login_required
 def transcribe_audio():
     if 'audio' not in request.files:

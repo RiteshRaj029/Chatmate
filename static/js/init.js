@@ -65,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (response.ok) {
                     const transcribedText = data.transcription;
                     displayMessage(transcribedText, 'user');
+                    console.log(transcribedText)
+                    
 
                     const modelParams = {
                         model: modelSelect.value,
@@ -141,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
                        
                         // Display the captured image in the chat UI
                         displayImage(imageData.split(',')[1], 'user');
-                        displayMessage('Image captured successfully', 'user');
+                        // displayMessage('Image captured successfully', 'user');
                        
                         // Stop the video stream and remove the video element
                         videoStream.getTracks().forEach(track => track.stop());
