@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&amp;display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
-<body>
+<body style="overflow-x: auto;">
     <div class="container">
         <div class="sidebar">
             <div class="sidebartop">
@@ -21,7 +21,7 @@
                     <img src="{{url_for('static',filename='asset/cralogo.png')}}" alt="none2">
                 </div>
                 <div class="menu">
-                    <i class="bi bi-list" style="color: cyan;"></i>
+                    <i class="bi bi-list" style="color: black;"></i>
                 </div>
             </div>
             <nav>
@@ -29,21 +29,23 @@
                     <h2 style="font-family: Kode Mono">Select a model</h2>
                     <select id="model-select" style="background-color: lightcyan;">
                         <option value="gpt-4o">gpt-4o</option>
-                        <option value="gpt-4">gpt-4</option>
-                        <option value="gpt-3">gpt-3</option>
+                        <option value="gpt-4-1106-Preview">gpt-4</option>
+                        <option value="gpt-4-32k">gpt-4-32k</option>
                     </select>
-                    <button id="model-parameters" class="btn model-parameters" style="background-color: lightcyan;">Model parameters</button>
-                    <div class="audio-response"  style="display: flex;justify-content:space-between">
+                    <!-- <button id="model-parameters" class="btn model-parameters" style="background-color: lightcyan;">Model parameters</button> -->
+                    <hr>
+                    <!-- <div class="audio-response"  style="display: flex;justify-content:space-between">
                         <p style="font-weight: bold;font-size: larger;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Audio response</p>
                         <input type="checkbox" id="audio-response-checkbox" style="width: 8%;">
-                    </div>
+                    </div> -->
                     <button id="reset-conversation" class="btn reset-conversation" style="font-family: Kode Mono; background-color: lightcyan;">Reset conversation 🔁</button>
                     <div class="add-section" style="font-family: Kode Mono">
                         <h3 style="text-align: left; margin-top: 20px; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif">Add an image</h3>
                         <input type="file" id="image-upload" style="display: none;" accept="image/*">
                         <button id="upload-btn" class="btn upload-btn" style="background-color:lightcyan">Upload ⬇️</button>
+                        <button id="camera-btn" class="btn camera-btn" style="background-color:lightcyan">Camera 📸</button>
                         <div id="camera-container" style="position: relative;">
-                            <button id="camera-btn" class="btn camera-btn" style="background-color:lightcyan">Camera 📸</button>
+                            <!-- <button id="camera-btn" class="btn camera-btn" style="background-color:lightcyan">Camera 📸</button> -->
                             <button id="capture-btn" class="btn capture-btn" style="background-color:lightcyan; display:none; position: absolute; top: 10px; left: 10px;">Capture 📸</button>
                         </div>
                     </div>
@@ -65,19 +67,19 @@
                 
             </div>
         </div>
-        <div class="main">
+        <div class="main" style="overflow-x: auto;">
             <div class="row" style="display: flex;">
                 <div class="image-logo">
                     <img src="{{url_for('static',filename='asset/Logo1.png')}}" alt="" style="width: 50x; height:50px">
                 </div>
                 <h1 style=" font-family:Kode Mono; margin-top: 10px; margin-left: 10px;">OmniChat</h1>
             </div>
-            <div class="chat">
-                <div class="chat-area" style="background-color: lightgreen;width:300px;height:300px" id="chatarea">
+            <!-- <div class="chat">
+                <div class="chat-area" style="background-color: transparent;width:auto;height:auto" id="chat-container">
 
                 </div>
                 <i class="bi bi-chat-dots-fill" style="right: 10px;position: absolute;bottom:-42px" id="chat"></i>
-            </div>
+            </div> -->
             <div class="message-input">
                 <input type="text" id="message-input" placeholder="Enter your message">
                 <button id="send-btn" class="send-btn">&gt;</button>

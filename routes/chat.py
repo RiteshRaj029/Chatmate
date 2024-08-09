@@ -12,7 +12,6 @@ import uuid
 import os
 import logging
 import ffmpeg
-import tempfile
 import base64
 
 
@@ -61,7 +60,7 @@ def send_message():
         response = client.chat.completions.create(
             model= model_params.get("model","gpt-4o"),
             messages = messages,
-            temperature=model_params.get("temperature",0.3),
+            temperature=model_params.get("temperature",0.5),
             max_tokens=4096,
             stream=True,
         )

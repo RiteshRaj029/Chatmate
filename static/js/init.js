@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const cameraBtn = document.getElementById('camera-btn');
     const captureBtn = document.getElementById('capture-btn');
     const videoContainer = document.getElementById('camera-container');
+    const resetConversationBtn = document.getElementById('reset-conversation');
 
     document.getElementById('logout-icon').addEventListener('click', function() {
         window.location.href = '/logout';
@@ -21,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let videoElement;
     let videoStream;
 
+
+    //add an audio(voice recording and handling)
     audioBtn.addEventListener('click', () => {
         if (mediaRecorder && mediaRecorder.state === 'recording') {
             mediaRecorder.stop();
@@ -65,16 +68,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const modelParams = {
                         model: modelSelect.value,
-                        temperature: 0.3
+                        temperature: 0.5
                     };
-                    const audioResponse = audioResponseCheckbox.checked;
+                    // const audioResponse = audioResponseCheckbox.checked;
 
                     const messageResponse = await fetch('/api/send_message', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ message: transcribedText, model_params: modelParams, audio_response: audioResponse })
+                        body: JSON.stringify({ message: transcribedText, model_params: modelParams })    //, audio_response: audioResponse
                     });
 
                 
@@ -112,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    //clicking pic from camera
     cameraBtn.addEventListener('click', function() {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({ video: true })
@@ -154,15 +158,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    sendBtn.addEventListener('click', async () => {
+
+    resetConversationBtn.addEventListener('click', () => {
+        // Clear all messages from the chat container
+        chatContainer.innerHTML = '';
+        
+        // Optionally, clear any stored images
+        sessionStorage.removeItem('uploaded_image');
+        sessionStorage.removeItem('captured_image');
+        
+        // Optionally, clear any input fields
+        messageInput.value = '';
+    });
+
+    
+
+    async function handleSendMessage() {
+        
         const message = messageInput.value;
+        displayMessage(message, 'user');
         if (!message) return;
         
+        messageInput.value = '';
+
         const modelParams = {
             model: modelSelect.value,
             temperature: 0.3
         };
-        const audioResponse = audioResponseCheckbox.checked;
+        // const audioResponse = audioResponseCheckbox.checked;
         const uploadedImage = sessionStorage.getItem('uploaded_image');
         const capturedImage = sessionStorage.getItem('captured_image');
 
@@ -170,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const payload = {
                 message,
                 model_params: modelParams,
-                audio_response: audioResponse,
+                // audio_response: audioResponse,
                 image: capturedImage || uploadedImage
             };
    
@@ -186,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             const data = await response.json();
             if (response.ok) {
-                displayMessage(message, 'user');
+                
                 displayMessage(data.response, 'bot');
 
                 if (data.audio) {
@@ -194,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     audio.play();
                 }
 
-                messageInput.value = '';
+                
                 sessionStorage.removeItem('uploaded_image');
                 sessionStorage.removeItem('captured_image');
             } else {
@@ -203,6 +226,17 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred while sending the message');
+        }
+    }
+
+    //send button handling
+    sendBtn.addEventListener('click', handleSendMessage);
+
+    // Event listener for Enter key press
+    messageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevents the default action of Enter key (e.g., form submission)
+            handleSendMessage();
         }
     });
 
@@ -250,25 +284,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const base64Image = reader.result.split(',')[1];  // Remove the "data:image/png;base64," prefix
             sessionStorage.setItem('uploaded_image', base64Image);
             displayImage(base64Image, 'user');
-            displayMessage('Image uploaded successfully', 'user');
+            // displayMessage('Image uploaded successfully', 'user');
         };
      
         reader.onerror = () => {
             alert('Failed to read the file!');
         };
        
-       
-        // const formData = new FormData();
-        // formData.append('image', file);
-
-        // const response = await fetch('/api/add_image', {
-        //     method: 'POST',
-        //     body: formData
-        // });
-
-        // const data = await response.json();
-        
-        // alert(data.status);
     });
 
     const menu = document.querySelector(".menu");
@@ -303,12 +325,12 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
-    const chatmenu = document.getElementById('chat');
-    const chatarea = document.getElementById('chatarea');
+    // const chatmenu = document.getElementById('chat');
+    // const chatarea = document.getElementById('chat-container');
 
-    chatmenu.addEventListener('click', () => {
-        chatarea.classList.toggle('hidden');
-    });
+    // chatmenu.addEventListener('click', () => {
+    //     chatarea.classList.toggle('hidden');
+    // });
 
 });
 

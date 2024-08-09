@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 
+html {
+  scroll-behavior: smooth;
+}
+
 .header h1 {
   font-size: 24px;
   color: #0d0d0d;
@@ -50,28 +54,18 @@
   text-align: center;
 }
 
-/* .sidebar .audio-response input[type="checkbox"] {
-  text-align: center;
-  margin-right: -275px;
-} */
-.chat{
-  bottom: 0;
-    position: absolute;
-    margin-bottom: 100px;
-    font-size: 35px;
-    right: 5px;
-}
 .sidebar {
   width: 25%;
-  /*background-color:;*/
-  color: black;
-  padding: 20px;
+  height: 100vh; 
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  background-color: rgb(7, 90, 90); 
+  color: #62c5c5;
+  padding: 20px; 
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-.hidden {
-  display: none;
+  scrollbar-width:none
 }
 
 .sidebar h2 {
@@ -98,7 +92,8 @@
   background-color: #9bb0bb;
   color: rgb(0, 0, 0);
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
+  
 }
 
 .sidebar .btn:hover {
@@ -116,6 +111,8 @@ body {
   font-family: "Open Sans", sans-serif;
   font-size: 14px;
   background-color: lightcyan;
+  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .container {
@@ -123,7 +120,7 @@ body {
   flex-flow: row wrap;
 }
 .container .sidebar {
-  background-color: rgb(3, 44, 44);
+  background-color: rgb(7, 90, 90);
   color: #62c5c5;
   width: 20%;
   height: 100%;
@@ -223,8 +220,8 @@ body {
   align-content: center;
   align-items: center;
   width: calc(100% - 2rem);
-  position: absolute;
-  bottom: 1rem;
+  /* position: absolute; */
+  margin-top: 100px;
 }
 .container .sidebar .account .avatar {
   margin-right: 1rem;
@@ -252,7 +249,6 @@ body {
 .container .main {
   margin-left: calc(20% + 2rem);
   padding: 1rem;
-
 }
 .message-input{
   bottom: 0;
@@ -348,6 +344,15 @@ body {
 }
 .searchWindow.active {
   display: block;
+}
+
+.user{
+  color: black;
+  font-weight: 600;
+}
+
+.bot{
+  font-weight:800;
 }
 
 @media (max-width: 844px) {
