@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, session
 from flask_login import login_required, current_user
 from werkzeug.exceptions import Unauthorized
 from extensions import db
@@ -12,6 +12,8 @@ import uuid
 import os
 import logging
 import ffmpeg
+import tempfile
+import base64
 
 
 bp = Blueprint('chat', __name__)
@@ -33,15 +35,32 @@ def send_message():
         message = data.get('message')
         model_params = data.get('model_params',{})
         audio_response = data.get('audio_response')
+        image_base64 = data.get('image')
+        
 
         if not message:
             return jsonify({'error': 'Message is required'}), 400
         
         client = client_creator()
         response_message = ""
+
+        # Prepare the message content
+        messages = [{"role": "user", "content": [{"type": "text", "text": message}]}]
+
+        # If an image is included, add it to the messages content
+        if image_base64:
+            messages[0]["content"].append({
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:image/png;base64,{image_base64}",
+                    "detail": "high"
+                }
+            })
+
+
         response = client.chat.completions.create(
             model= model_params.get("model","gpt-4o"),
-            messages = [{"role": "user", "content": message}],
+            messages = messages,
             temperature=model_params.get("temperature",0.3),
             max_tokens=4096,
             stream=True,
@@ -55,17 +74,18 @@ def send_message():
                         response_message += content
                     # yield response_message
             except IndexError as e:
-                print(f"Debug Exception - {str(e)}")
-                print(f"Debug: Chunk - {chunk}")
+                logging.error(f"Chunk processing error: {str(e)}")
+
+        # Prepare the response
+        response_data = {
+            'response': response_message,
+            'audio': None
+        }       
 
         # chat_history = ChatHistory(user_id = current_user.id, message = message, response = response_message)
         # db.session.add(chat_history)
         # db.session.commit()
 
-        response_data = {
-            'response': response_message,
-            'audio': None  # Audio need to be added
-        }
 
         if audio_response:
             engine = pyttsx3.init()
@@ -98,10 +118,10 @@ def add_image():
         img_byte = buffered.getvalue()
         img_base64 = base64.b64encode(img_byte).decode('utf-8')
 
-        chat_history = ChatHistory(user_id = current_user.id, message="", response = "", image = img_base64)
-        db.session.add(chat_history)
-        db.session.commit()
-        return jsonify({'status': 'Image received'})
+        # chat_history = ChatHistory(user_id = current_user.id, message="", response = "", image = img_base64)
+        # db.session.add(chat_history)
+        # db.session.commit()
+        return jsonify({'status': 'Image received', 'image': img_base64})
 
     return jsonify({'status': 'Image processing failed'}), 500
 

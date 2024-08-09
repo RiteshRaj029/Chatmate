@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from config import Config
 from flask_migrate import Migrate
 from extensions import db, login_manager 
