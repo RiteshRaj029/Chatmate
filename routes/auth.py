@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request,session
 from flask_login import login_user, login_required, logout_user, current_user
 from forms.auth_forms import LoginForm, SignupForm
 from models.user import User
@@ -78,4 +78,5 @@ def signup():
 @login_required
 def logout():
     logout_user()
+    session.clear()
     return redirect(url_for('auth.login'))

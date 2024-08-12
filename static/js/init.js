@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
     const chatContainer = document.getElementById('chat-container');
     const sendBtn = document.getElementById('send-btn');
@@ -160,18 +161,40 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    
 
-    resetConversationBtn.addEventListener('click', () => {
+    resetConversationBtn.addEventListener('click', async () => {
+    // Show confirmation dialog
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'This will reset the conversation and clear all messages.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, reset it!',
+        cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
         // Clear all messages from the chat container
         chatContainer.innerHTML = '';
-        
+
         // Optionally, clear any stored images
         sessionStorage.removeItem('uploaded_image');
         sessionStorage.removeItem('captured_image');
-        
+
         // Optionally, clear any input fields
         messageInput.value = '';
-    });
+
+        // Show success message
+        Swal.fire(
+            'Reset!',
+            'The conversation has been reset.',
+            'success'
+        );
+    }
+});
 
     
 

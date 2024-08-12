@@ -160,8 +160,6 @@ def transcribe_audio():
             
             # audio_file_like = BytesIO(f.read())
 
-    
-        # try:
             client = client_creator()
             # Use Whisper model to transcribe audio
             print("The code was called here!")
@@ -171,10 +169,6 @@ def transcribe_audio():
                 language='en'
             )
             return jsonify({'transcription': transcription.text})
-
-        # except Exception as e:
-        #     print(f"Error in transcribe_audio: {e}")
-        #     return jsonify({'error': str(e)}), 500
     
 
     return jsonify({'error': 'Audio processing failed'}), 500
