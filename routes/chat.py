@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for, session
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, session, Response
 from flask_login import login_required, current_user
 from werkzeug.exceptions import Unauthorized
 from extensions import db
@@ -29,78 +29,83 @@ def chat():
 @bp.route('/api/send_message', methods = ['POST'])
 @login_required
 def send_message():
-    try:
-        data = request.get_json()
-        message = data.get('message')
-        model_params = data.get('model_params',{})
-        audio_response = data.get('audio_response')
-        image_base64 = data.get('image')
-        
-
-        if not message:
-            return jsonify({'error': 'Message is required'}), 400
-        
-        client = client_creator()
-        response_message = ""
-
-        # Prepare the message content
-        messages = [{"role": "user", "content": [{"type": "text", "text": message}]}]
-
-        # If an image is included, add it to the messages content
-        if image_base64:
-            messages[0]["content"].append({
-                "type": "image_url",
-                "image_url": {
-                    "url": f"data:image/png;base64,{image_base64}",
-                    "detail": "high"
-                }
-            })
-
-
-        response = client.chat.completions.create(
-            model= model_params.get("model","gpt-4o"),
-            messages = messages,
-            temperature=model_params.get("temperature",0.5),
-            max_tokens=4096,
-            stream=True,
-        )
-
-        for chunk in response:
-            try:
-                if chunk.choices:
-                    content = chunk.choices[0].delta.content
-                    if content:
-                        response_message += content
-                    # yield response_message
-            except IndexError as e:
-                logging.error(f"Chunk processing error: {str(e)}")
-
-        # Prepare the response
-        response_data = {
-            'response': response_message,
-            'audio': None
-        }       
-
-        # chat_history = ChatHistory(user_id = current_user.id, message = message, response = response_message)
-        # db.session.add(chat_history)
-        # db.session.commit()
-
-
-        if audio_response:
-            engine = pyttsx3.init()
-            unique_audio_file = f'response_audio_{uuid.uuid4()}.mp3'
-            engine.save_to_file(response_message, unique_audio_file)
-            engine.runAndWait()
-            with open(unique_audio_file,'rb') as audio_file:
-                audio_bytes = audio_file.read()
-            response_data['audio'] = base64.b64encode(audio_bytes).decode('utf-8')
-            os.remove(unique_audio_file)
-
-        return jsonify(response_data)
+    data = request.get_json()
+    message = data.get('message')
+    model_params = data.get('model_params',{})
+    audio_response = data.get('audio_response')
+    image_base64 = data.get('image')
     
-    except Exception as e:
-        logging.error(f"Error in send_message: {str(e)}")
-        return jsonify({'error': 'Internal Server Error'}), 500
+
+    if not message:
+        return jsonify({'error': 'Message is required'}), 400
+    
+    client = client_creator()
+    response_message = ""
+
+    # Prepare the message content
+    messages = [{"role": "user", "content": [{"type": "text", "text": message}]}]
+
+    # If an image is included, add it to the messages content
+    if image_base64:
+        messages[0]["content"].append({
+            "type": "image_url",
+            "image_url": {
+                "url": f"data:image/png;base64,{image_base64}",
+                "detail": "high"
+            }
+        })    
+    def generate():
+        try:
+            
+
+
+            response = client.chat.completions.create(
+                model= model_params.get("model","gpt-4o"),
+                messages = messages,
+                temperature=model_params.get("temperature",0.5),
+                max_tokens=4096,
+                stream=True,
+            )
+
+            for chunk in response:
+                try:
+                    if chunk.choices[0].delta.content is not None:
+                        yield (chunk.choices[0].delta.content)
+                        # content = chunk.choices[0].delta.content
+                        # if content:
+                        #     response_message += content
+                        # yield response_message
+                except IndexError as e:
+                    logging.error(f"Chunk processing error: {str(e)}")
+
+            # Prepare the response
+            # response_data = {
+            #     'response': response_message,
+            #     'audio': None
+            # }       
+
+            # chat_history = ChatHistory(user_id = current_user.id, message = message, response = response_message)
+            # db.session.add(chat_history)
+            # db.session.commit()
+
+
+            # if audio_response:
+            #     engine = pyttsx3.init()
+            #     unique_audio_file = f'response_audio_{uuid.uuid4()}.mp3'
+            #     engine.save_to_file(response_message, unique_audio_file)
+            #     engine.runAndWait()
+            #     with open(unique_audio_file,'rb') as audio_file:
+            #         audio_bytes = audio_file.read()
+            #     response_data['audio'] = base64.b64encode(audio_bytes).decode('utf-8')
+            #     os.remove(unique_audio_file)
+
+            # return jsonify(response_data)
+        
+        except Exception as e:
+            logging.error(f"Error in send_message: {str(e)}")
+            return jsonify({'error': 'Internal Server Error'}), 500   
+
+    return generate(), {"Content-Type": "text/plain"}         
 
 @bp.route('/api/add_image', methods = ['POST'])
 @login_required

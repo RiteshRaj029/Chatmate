@@ -85,22 +85,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 
 
-                    const messageData = await messageResponse.json();
-                    if (messageResponse.ok) {
+                    // const messageData = await messageResponse.json();
+                    // if (messageResponse.ok) {
                         
-                        displayMessage(messageData.response, 'bot');
-                        console.log(messageData)
-                        console.log(messageData.response)
+                    //     displayMessage(messageData.response, 'bot');
+                    //     console.log(messageData)
+                    //     console.log(messageData.response)
 
-                        // if (messageData.audio) {
-                        //     const audio = new Audio(`data:audio/mp3;base64,${messageData.audio}`);
-                        //     audio.play();
-                        // }
+                    //     // if (messageData.audio) {
+                    //     //     const audio = new Audio(`data:audio/mp3;base64,${messageData.audio}`);
+                    //     //     audio.play();
+                    //     // }
 
-                        messageInput.value = '';
-                    } else {
-                        alert(messageData.error || 'An error occurred');
-                    }
+                    //     messageInput.value = '';
+                    // } else {
+                    //     alert(messageData.error || 'An error occurred');
+                    // }
+
+                    const reader = messageResponse.body.getReader();
+                    let output = "";
+
+                    while(true){
+                        const { done , value } = await reader.read();
+                        output += new TextDecoder().decode(value);
+                        // displayMessage(output, 'bot');
+                        chatContainer.innerHTML = marked.parse(output);
+
+
+                        if(done){
+                            console.log(output)
+                            return;
+                        }
+            }
                 } 
                 else {
                     alert(data.error || 'An error occurred during transcription');
@@ -234,22 +250,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify(payload)
             });
             
-            const data = await response.json();
-            if (response.ok) {
+            // const data = await response.json();
+            // if (response.ok) {
                 
-                displayMessage(data.response, 'bot');
+            //     displayMessage(data.response, 'bot');
 
-                if (data.audio) {
-                    const audio = new Audio(`data:audio/mp3;base64,${data.audio}`);
-                    audio.play();
+            //     if (data.audio) {
+            //         const audio = new Audio(`data:audio/mp3;base64,${data.audio}`);
+            //         audio.play();
+            //     }
+
+                
+            //     sessionStorage.removeItem('uploaded_image');
+            //     sessionStorage.removeItem('captured_image');
+            // } else {
+            //     alert(data.error || 'An error occurred');
+            // }
+
+            const reader = response.body.getReader();
+            let output = "";
+
+            while(true){
+                const { done , value } = await reader.read();
+                output += new TextDecoder().decode(value);
+                // displayMessage(output, 'bot');
+                chatContainer.innerHTML = marked.parse(output);
+
+
+                if(done){
+                    console.log(output)
+                    return;
                 }
-
-                
-                sessionStorage.removeItem('uploaded_image');
-                sessionStorage.removeItem('captured_image');
-            } else {
-                alert(data.error || 'An error occurred');
             }
+            
+
+
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred while sending the message');
