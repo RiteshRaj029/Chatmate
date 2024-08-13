@@ -60,7 +60,7 @@ def send_message():
 
 
             response = client.chat.completions.create(
-                model= model_params.get("model","gpt-4o"),
+                model= model_params.get("model"),
                 messages = messages,
                 temperature=model_params.get("temperature",0.5),
                 max_tokens=4096,
@@ -71,6 +71,7 @@ def send_message():
                 try:
                     if chunk.choices[0].delta.content is not None:
                         yield (chunk.choices[0].delta.content)
+                        
                         # content = chunk.choices[0].delta.content
                         # if content:
                         #     response_message += content
