@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         videoStream.getTracks().forEach(track => track.stop());
                         videoElement.remove();
                         captureBtn.style.display = 'none';
+                        cameraOpen = false;
                     });
                 })
                 .catch(function(error) {
@@ -159,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             alert('getUserMedia is not supported in this browser.');
         }
+        
     });
 
     

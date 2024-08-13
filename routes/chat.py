@@ -12,7 +12,7 @@ import uuid
 import os
 import logging
 import ffmpeg
-import base64
+
 
 
 bp = Blueprint('chat', __name__)

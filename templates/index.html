@@ -16,10 +16,10 @@
         <div class="sidebar">
             <div class="sidebartop">
                 <div class="logo">
-                    <img src="{{url_for('static',filename='asset/cralogo.png')}}" alt="none">
+                    <img src="{{url_for('static',filename='asset/test.png')}}" alt="none">
                 </div>
                 <div class="logo-mobile">
-                    <img src="{{url_for('static',filename='asset/cralogo.png')}}" alt="none2">
+                    <img src="{{url_for('static',filename='asset/test.png')}}" alt="none">
                 </div>
                 <div class="menu">
                     <i class="bi bi-list" style="color: black;"></i>
@@ -47,7 +47,7 @@
                         <button id="camera-btn" class="btn camera-btn" style="background-color:lightcyan">Camera 📸</button>
                         <div id="camera-container" style="position: relative;">
                             <!-- <button id="camera-btn" class="btn camera-btn" style="background-color:lightcyan">Camera 📸</button> -->
-                            <button id="capture-btn" class="btn capture-btn" style="background-color:lightcyan; display:none;  top: 10px; left: 10px;">Capture 📸</button>
+                            <button id="capture-btn" class="btn capture-btn" style="display:none;font-size: 25px;background-color: transparent;color: white;cursor: pointer;">📸</button>
                         </div>
                     </div>
                     <div class="add-section" style="font-family: Kode Mono">
@@ -58,7 +58,7 @@
             </nav>
             <div class="account">
                 <div class="avatar">
-                    <img src="{{url_for('static',filename='asset/logo.png')}}" alt="">
+                    <img src="{{url_for('static',filename='asset/chat.png')}}" alt="">
                 </div>
                 <div class="name">
                     <h4>{{user.name|capitalize}}</h4>
@@ -71,9 +71,9 @@
         <div class="main" style="overflow-x: auto;">
             <div class="row" style="display: flex;">
                 <div class="image-logo">
-                    <img src="{{url_for('static',filename='asset/Logo1.png')}}" alt="" style="width: 50x; height:50px">
+                    <img src="{{url_for('static',filename='asset/chat.png')}}" alt="" style="height:80px">
                 </div>
-                <h1 style=" font-family:Kode Mono; margin-top: 10px; margin-left: 10px;">OmniChat</h1>
+                <h1 style=" font-family:Kode Mono; margin-top: 10px; margin-left: 10px;">Chatmate</h1>
             </div>
             <!-- <div class="chat">
                 <div class="chat-area" style="background-color: transparent;width:auto;height:auto" id="chat-container">

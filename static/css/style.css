@@ -217,11 +217,12 @@ body {
 .container .sidebar .account {
   display: flex;
   justify-content: space-between;
-  align-content: center;
   align-items: center;
   width: calc(100% - 2rem);
-  /* position: absolute; */
-  margin-top: 100px;
+  position: absolute; 
+  bottom: 0;
+  margin-bottom: 10px;
+  margin-top: 50px;
 }
 .container .sidebar .account .avatar {
   margin-right: 1rem;
@@ -344,15 +345,6 @@ body {
 }
 .searchWindow.active {
   display: block;
-}
-
-.user{
-  color: black;
-  font-weight: 600;
-}
-
-.bot{
-  font-weight:800;
 }
 
 @media (max-width: 844px) {
