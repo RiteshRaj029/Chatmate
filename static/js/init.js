@@ -365,8 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
             //     }
 
                 
-            //     sessionStorage.removeItem('uploaded_image');
-            //     sessionStorage.removeItem('captured_image');
+                
             // } else {
             //     alert(data.error || 'An error occurred');
             // }
@@ -388,12 +387,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if(done){
                     console.log(output)
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                    sessionStorage.removeItem('uploaded_image');
+                    sessionStorage.removeItem('captured_image');
                     return;
                 }
                 // output += decoder.decode(value, { stream: true });
                 // Update the existing message element with new content
                 // messageElement.textContent = marked.parse(output);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
             
             }
 
