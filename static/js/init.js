@@ -19,9 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let mediaRecorder;
     let audioChunks = [];
-
+    let isCapturing = false;
     let videoElement;
     let videoStream;
+    let cameraOpen = false;
+    let isUploading = false;
 
 
     //add an audio(voice recording and handling)
@@ -133,10 +135,90 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Could not access microphone. Please check your settings.');
         });
     }
+    function initializeCaptureButton() {
+        captureBtn.removeEventListener('click', handleCapture);
+        captureBtn.addEventListener('click', handleCapture);
+    }
+    async function handleCapture() {
+        if (isCapturing) return;
+        isCapturing = true;
 
+        if (videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+
+            // Check if the captured image is not black
+            const isBlack = await checkIfBlackImage(imageData);
+            if (!isBlack) {
+                const base64Image = imageData.split(',')[1];
+                displayImage(base64Image, 'user'); // Display image
+                sessionStorage.setItem('captured_image', base64Image); // Save to session storage
+            } else {
+                console.log('Captured a black image, not displaying.');
+            }
+
+            videoStream.getTracks().forEach(track => track.stop());
+            videoElement.remove();
+            captureBtn.style.display = 'none';
+            cameraOpen = false;
+        } else {
+            alert('Video is not ready. Please make sure the camera is working properly.');
+        }
+
+        isCapturing = false; // Reset capturing flag
+    }
     //clicking pic from camera
+    // cameraBtn.addEventListener('click', function() {
+    //     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    //         navigator.mediaDevices.getUserMedia({ video: true })
+    //             .then(function(stream) {
+    //                 videoElement = document.createElement('video');
+    //                 videoElement.srcObject = stream;
+    //                 videoElement.autoplay = true;
+    //                 videoElement.style.width = '100%';
+    //                 videoContainer.appendChild(videoElement);
+    //                 videoStream = stream;
+    //                 captureBtn.style.display = 'block';
+   
+    //                 captureBtn.addEventListener('click', function() {
+    //                     const canvas = document.createElement('canvas');
+    //                     const context = canvas.getContext('2d');
+    //                     canvas.width = videoElement.videoWidth;
+    //                     canvas.height = videoElement.videoHeight;
+    //                     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    //                     const imageData = canvas.toDataURL('image/png');
+                       
+    //                     // Store the captured image in sessionStorage
+    //                     sessionStorage.setItem('captured_image', imageData.split(',')[1]);
+                       
+    //                     // Display the captured image in the chat UI
+    //                     displayImage(imageData.split(',')[1], 'user');
+    //                     // displayMessage('Image captured successfully', 'user');
+                       
+    //                     // Stop the video stream and remove the video element
+    //                     videoStream.getTracks().forEach(track => track.stop());
+    //                     videoElement.remove();
+    //                     captureBtn.style.display = 'none';
+    //                     cameraOpen = false;
+    //                 });
+    //             })
+    //             .catch(function(error) {
+    //                 console.error('Error accessing the camera: ', error);
+    //                 alert('Could not access the camera. Please check your settings.');
+    //             });
+    //     } else {
+    //         alert('getUserMedia is not supported in this browser.');
+    //     }
+        
+    // });
+
     cameraBtn.addEventListener('click', function() {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        if (!cameraOpen) {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(function(stream) {
                     videoElement = document.createElement('video');
@@ -146,40 +228,59 @@ document.addEventListener('DOMContentLoaded', function () {
                     videoContainer.appendChild(videoElement);
                     videoStream = stream;
                     captureBtn.style.display = 'block';
-   
-                    captureBtn.addEventListener('click', function() {
-                        const canvas = document.createElement('canvas');
-                        const context = canvas.getContext('2d');
-                        canvas.width = videoElement.videoWidth;
-                        canvas.height = videoElement.videoHeight;
-                        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-                        const imageData = canvas.toDataURL('image/png');
-                       
-                        // Store the captured image in sessionStorage
-                        sessionStorage.setItem('captured_image', imageData.split(',')[1]);
-                       
-                        // Display the captured image in the chat UI
-                        displayImage(imageData.split(',')[1], 'user');
-                        // displayMessage('Image captured successfully', 'user');
-                       
-                        // Stop the video stream and remove the video element
-                        videoStream.getTracks().forEach(track => track.stop());
-                        videoElement.remove();
-                        captureBtn.style.display = 'none';
-                        cameraOpen = false;
-                    });
+                    cameraOpen = true;
+                    initializeCaptureButton(); // Initialize capture button
                 })
                 .catch(function(error) {
                     console.error('Error accessing the camera: ', error);
                     alert('Could not access the camera. Please check your settings.');
                 });
         } else {
-            alert('getUserMedia is not supported in this browser.');
+            videoStream.getTracks().forEach(track => track.stop());
+            if (videoElement) {
+                videoElement.remove();
+            }
+            captureBtn.style.display = 'none';
+            cameraOpen = false; 
         }
-        
     });
-
     
+    function checkIfBlackImage(imageData) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = imageData;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                const pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+                for (let i = 0; i < pixelData.length; i += 4) {
+                    if (pixelData[i] !== 0 || pixelData[i + 1] !== 0 || pixelData[i + 2] !== 0) {
+                        resolve(false);
+                        return;
+                    }
+                }
+                resolve(true);
+            };
+        });
+    }
+    function displayImage(imageData, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+
+        const imgElement = document.createElement('img');
+        imgElement.src = `data:image/png;base64,${imageData}`;
+        imgElement.alt = "Uploaded image";
+        imgElement.style.maxWidth = "200px";  
+        imgElement.style.maxHeight = "200px";
+
+        messageElement.appendChild(imgElement);
+        chatContainer.appendChild(messageElement);
+        chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the latest message
+    }
 
     resetConversationBtn.addEventListener('click', async () => {
     // Show confirmation dialog
