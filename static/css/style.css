@@ -347,6 +347,15 @@ body {
   display: block;
 }
 
+.user{
+  color: black;
+  font-weight: 600;
+}
+
+.bot{
+  
+}
+
 @media (max-width: 844px) {
   .container .sidebar {
     width: 5%;

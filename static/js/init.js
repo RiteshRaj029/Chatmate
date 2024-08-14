@@ -106,18 +106,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const reader = messageResponse.body.getReader();
                     let output = "";
+                    let messageElement = document.createElement('div');
+                    messageElement.classList.add('message', 'bot');
+                    chatContainer.appendChild(messageElement);
 
                     while(true){
                         const { done , value } = await reader.read();
                         output += new TextDecoder().decode(value);
-                        // displayMessage(output, 'bot');
-                        chatContainer.innerHTML = marked.parse(output);
+                        messageElement.innerHTML = marked.parse(output);
 
 
                         if(done){
                             console.log(output)
                             return;
                         }
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
             }
                 } 
                 else {
@@ -320,9 +323,9 @@ document.addEventListener('DOMContentLoaded', function () {
     async function handleSendMessage() {
         
         const message = messageInput.value;
-        displayMessage(message, 'user');
         if (!message) return;
         
+        displayMessage(message, 'user');
         messageInput.value = '';
 
         const modelParams = {
@@ -369,20 +372,31 @@ document.addEventListener('DOMContentLoaded', function () {
             // }
 
             const reader = response.body.getReader();
+            // const decoder = new TextDecoder();
             let output = "";
+            let messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'bot');
+            chatContainer.appendChild(messageElement);
 
             while(true){
                 const { done , value } = await reader.read();
                 output += new TextDecoder().decode(value);
-                // displayMessage(output, 'bot');
-                chatContainer.innerHTML = marked.parse(output);
+                messageElement.innerHTML = marked.parse(output);
+               
+                // chatContainer.innerHTML = marked.parse(output);
 
 
                 if(done){
                     console.log(output)
                     return;
                 }
+                // output += decoder.decode(value, { stream: true });
+                // Update the existing message element with new content
+                // messageElement.textContent = marked.parse(output);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            
             }
+
             
 
 
