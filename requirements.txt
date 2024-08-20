@@ -8,4 +8,4 @@ flask-wtf
 flask-sqlalchemy
 Flask-Migrate
 werkzeug
-python-ffmpeg
+ffmpeg-python
